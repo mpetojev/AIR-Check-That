@@ -4,6 +4,7 @@ import torch
 from sympy import sec
 from torch import nn
 from transformers import AutoModel, AutoTokenizer
+from sentence_transformers import SentenceTransformer
 
 import torch.nn.functional as F
 from tqdm import tqdm
@@ -20,7 +21,7 @@ def mean_pooling(model_output, attention_mask):
 def encode_texts(texts, batch_size=16, max_length=512):
     all_embeddings = []
     for i in tqdm(range(0, len(texts), batch_size), desc="Encoding"):
-        batch_texts = texts[i:i+batch_size]
+        batch_texts = texts[i:i + batch_size]
         encoded_input = tokenizer(
             batch_texts,
             padding=True,
@@ -30,8 +31,9 @@ def encode_texts(texts, batch_size=16, max_length=512):
         ).to(device)
         with torch.no_grad():
             model_output = model(**encoded_input)
-        embeddings = mean_pooling(model_output, encoded_input['attention_mask'])
-        all_embeddings.append(embeddings.cpu())
+            # Take CLS token
+            embeddings = model_output.last_hidden_state[:, 0, :]  # CLS pooling
+            all_embeddings.append(embeddings.cpu())
     return torch.cat(all_embeddings, dim=0)
 
 # Main retrieval function
@@ -62,16 +64,16 @@ PATH_COLLECTION_DATA = '../subtask4b_collection_data.pkl' #MODIFY PATH
 PATH_QUERY_TRAIN_DATA = '../subtask4b_query_tweets_train.tsv' #MODIFY PATH
 PATH_QUERY_DEV_DATA = '../subtask4b_query_tweets_dev.tsv' #MODIFY PATH
 
-df_collection = pd.read_pickle(PATH_COLLECTION_DATA)[:100]
+df_collection = pd.read_pickle(PATH_COLLECTION_DATA)
 # df_collection["total"] = df_collection["title"] #df_collection["source_x"]+" "+df_collection["title"]+" "+df_collection["abstract"]
 
-df_query_train = pd.read_csv(PATH_QUERY_TRAIN_DATA, sep = '\t')[:100]
+df_query_train = pd.read_csv(PATH_QUERY_TRAIN_DATA, sep = '\t')
 # df_query_dev = pd.read_csv(PATH_QUERY_DEV_DATA, sep = '\t')
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-tokenizer = AutoTokenizer.from_pretrained("allenai/scibert_scivocab_uncased")
-model = AutoModel.from_pretrained("allenai/scibert_scivocab_uncased").to(device)
+tokenizer = AutoTokenizer.from_pretrained('allenai/specter')
+model = AutoModel.from_pretrained('allenai/specter').to(device)
 
 model.eval()
 
