@@ -23,6 +23,7 @@ TBA -->
 
 ## List of Versions
 - [15/01/2025] Training data released.
+- [02/05/2025] Test data released.
 
 ## Contents of the Subtask4b Directory
 
@@ -32,19 +33,20 @@ This repository contains the following files:
 2. **subtask4b_collection_data.pkl** The collection set for the retrieval task (CORD-19 academic papers' metadata)
 3. **subtask4b_query_tweets_train.tsv** The query set (train split) for the retrieval task (tweets with implicit references to CORD-19 papers)
 4. **subtask4b_query_tweets_dev.tsv** The query set (dev split) for the retrieval task (tweets with implicit references to CORD-19 papers)
-4. **README.md** this file
+5. **subtask4b_query_tweets_test.tsv** The query set **(FINAL TEST split)** (tweets with implicit references to CORD-19 papers)
+6. **README.md** this file
 
 ## Datasets statistics
 The data for the retrieval task is made of two sets:
-* **Query set (train & dev splits)**
+* **Query set (train, dev & test splits)**
   * content: tweets with implicit references to scientific papers from CORD-19.
-  * stats: 14,253 tweets.
+  * stats: 14,399 tweets.
 * **Collection set**
   * content: metadata of the CORD-19 scientific papers which tweets implicitly refer to.
-  * stats: metadata of 7,764 scientific papers.
+  * stats: metadata of 7,718 scientific papers.
 
 ## Input Data Format
-### Query set (train & dev splits)
+### Query set (train, dev & test splits)
 
 The tweets are provided as a TSV file with three columns:
 > post_id <TAB> tweet_text <TAB> cord_uid
